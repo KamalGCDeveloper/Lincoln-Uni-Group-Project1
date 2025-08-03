@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container my-5">
+        <div class="list-group">
+            {% if competition %}
+            {% for competition_id, comp in competition.items() %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h1 class="card-title">{{ comp.competition_title }}</h1>
+                    <p><strong>Category:</strong> {{ comp.competition_category }}</p>
+                    <p><strong>Description:</strong> {{ comp.competition_description }}</p>
+
+                    <!-- Results Display -->
+                    {% if not comp.is_ongoing and comp.result_finalised %}
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <p><strong>Total Votes:</strong> {{ comp.total_votes }}</p>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        {% for winner in comp.winners %}
+                        <div class="col-md-6">
+                            <strong>Winner:</strong> {{ winner.competitor_name }} <i class="fas fa-crown"
+                                style="color: gold;"></i>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Winning Share:</strong> {{ (winner.votes_quantity / comp.total_votes * 100) |
+                            round(2) }}%
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Countdown Timer -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="mb-0 me-3">
+                            <strong>From:</strong>
+                            <span id="start-time" data-time="{{ comp['start_date'].isoformat() }}">{{
+                                comp['start_date'].strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                        </p>
+                        <p class="mb-0">
+                            <strong>Remaining Time:</strong>
+                            <span id="countdown"></span>
+                        </p>
+                    </div>
+
+                    <span id="end-time" data-time="{{ comp['end_date'].isoformat() }}" style="display:none;"></span>
+
+                    <div class="mt-4">
+                        <form action="{{ url_for('submit_vote')}}" method="post">
+                            <input type="hidden" name="competition_id" value="{{ competition_id }}">
+                            <div class="d-flex justify-content-between align-items-center text-left">
+                                <h4>Competitors</h4>
+                                {% if comp.is_ongoing and user_role == 'voter' and not comp.user_has_voted %}
+                                <button type="submit" class="btn btn-primary">Submit Your Vote</button>
+                                {% endif %}
+                            </div>
+                            <div class="row mt-3">
+                                {% for competitor in comp.competitors %}
+                                <div class="col-md-4">
+                                    <div class="card mb-4">
+                                        <img src="{{ url_for('static', filename='competitor_images/' + competitor.competitor_image) }}" class="card-img-top"
+                                            alt="{{ competitor.competitor_name }}" style="width: 200px; height: 150px; object-fit: cover;">
+                                        <div class="card-body">
+                                            <h5 class="card-title" style="font-size: small;">{{
+                                                competitor.competitor_name }}</h5>
+                                            <p class="card-text" style="font-size: small;">{{
+                                                competitor.competitor_description }}</p>
+                                            {% if user_role %}
+                                            <p class="card-text" style="font-size: small;">Votes: {{
+                                                competitor.votes_quantity }}</p>
+                                            {% endif %}
+                                            {% if comp.is_ongoing and user_role == 'voter' and not comp.user_has_voted
+                                            and comp.result_finalised == 0 %}
+                                            <!-- Radio Button for Voting -->
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="competitor_id"
+                                                    id="competitor_{{ competitor.competitor_id }}"
+                                                    value="{{ competitor.competitor_id }}">
+                                                <label class="form-check-label" style="font-size: small;"
+                                                    for="competitor_{{ competitor.competitor_id }}">
+                                                    Vote for this competitor
+                                                </label>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="alert alert-info" role="alert">
+                No competition found.
+            </div>
+            {% endif %}
+
+            {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function updateCountdown() {
+                const now = new Date();
+                const endTime = new Date(document.getElementById('end-time').getAttribute('data-time'));
+                const countdownElement = document.getElementById('countdown');
+
+                // Calculate the countdown
+                const diff = endTime - now;
+
+                if (diff <= 0) {
+                    countdownElement.textContent = `Election ended on ${endTime.toLocaleString()}`;
+                    return;
+                }
+
+                const seconds = Math.floor((diff / 1000) % 60);
+                const minutes = Math.floor((diff / 1000 / 60) % 60);
+                const hours = Math.floor((diff / 1000 / 60 / 60) % 24);
+                const days = Math.floor(diff / 1000 / 60 / 60 / 24);
+
+                countdownElement.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s remaining`;
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        });
+    </script>
+
+</body>
+
+</html>

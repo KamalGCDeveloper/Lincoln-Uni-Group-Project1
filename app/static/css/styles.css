@@ -1,0 +1,151 @@
+html,
+body {
+    margin: 0;
+    height: 100%;
+}
+
+body {
+    background-image: url('https://images.pexels.com/photos/724949/pexels-photo-724949.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; 
+    margin: 0;
+    padding: 0;
+
+}
+
+.navbar {
+    height: 8vh;
+    margin-bottom: 20px;
+    font-size: large !important;
+}
+.card {
+    margin-bottom: 20px;
+}
+
+.container {
+    min-height: 85vh;
+    font-size: large;
+}
+
+.nav-link {
+    color: rgb(32, 57, 43)!important;
+}
+
+/* styles.css */
+@keyframes colorChange {
+    0% { color: #852d19; } /* Red */
+    25% { color: #00f72d; } /* Green */
+    50% { color: #000c41; } /* Blue */
+    75% { color: #ffff47; } /* Yellow */
+    100% { color: #611200; } /* Red */
+}
+
+.dynamic-title {
+    font-size: 3rem; /* Adjust size as needed */
+    font-weight: bold;
+    animation: colorChange 5s infinite; /* Adjust duration as needed */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3); /* Optional: add shadow for better readability */
+}
+
+
+footer {
+    height: 5vh;
+    color: blue;
+    background-color: #f8f9fa;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.footer-logo {
+    max-height: 100%;
+    max-width: 100%;
+    height: auto;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+}
+
+.arrow-container {
+    display: inline-block;
+    margin-left: 16px; /* Adjust spacing between name and arrow */
+}
+
+.arrow-down {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 8px solid #000;
+    transition: transform 0.5s;
+    vertical-align: middle;
+}
+
+.arrow-down.rotate {
+    transform: rotate(180deg);
+}
+
+.form-check .d-flex {
+    display: flex;
+    align-items: center; /* Align items vertically centered */
+}
+
+.form-check-input {
+    margin-right: 8px; /* Space between radio button and text */
+}
+
+.image-container {
+    text-align: center; /* Center image horizontally */
+    margin-bottom: 16px; /* Optional: space below the image */
+}
+
+.card-img-top {
+    max-width: 100%; /* Ensure the image fits within the container */
+    height: auto; /* Maintain aspect ratio */
+}
+
+/* Ensures the flash message box adjusts to fit its content */
+.flash-message {
+    text-align: center; /* Centers the text within the container */
+    margin-top: 20px; /* Margin to separate the flash message from other content */
+}
+
+/* Countdown timer styles */
+.countdown {
+    font-size: 1.25rem; /* Slightly larger font size for prominence */
+    font-weight: bold;
+    color: #dc3545; /* Default red color for urgency */
+    transition: color 0.5s ease; /* Smooth color transition */
+}
+
+/* Color when time is about to end */
+.countdown.urgent {
+    color: #ff4500; /* Orange for urgency */
+}
+
+/* Color for ended countdowns */
+.text-danger {
+    color: #dc3545; /* Red color for ended countdowns */
+}
+
+.vote-container {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #007bff; /* Bootstrap primary color or any color of your choice */
+    color: white;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.vote-container:hover {
+    background-color: #0056b3; /* Darker shade for hover effect */
+}
+
+

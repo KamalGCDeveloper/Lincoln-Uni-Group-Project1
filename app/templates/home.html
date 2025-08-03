@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+<div class="container my-5">
+    <!-- Jumbotron Section -->
+    <div class="jumbotron bg-light text-center">
+        <h1 class="display-4 dynamic-title">Welcome to Theta Voting!</h1>
+        <p class="lead">Easily manage and participate in land and nature conservation competitions.</p>
+        <p class="lead">Join us in promoting conservation through transparent and engaging voting!</p>
+    </div>
+
+    <!-- Current Competitions Section -->
+    {% if current_competitions %}
+    <div class="current-competitions-container mb-3">
+        <h3 class="mb-4"><strong>Current Competition(s)</strong></h3>
+        {% for competition_id, comp in current_competitions.items() %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <a href="{{ url_for('competition_details', competition_id=competition_id) }}" class="text-decoration-none">
+                        {{ comp.competition_title }}
+                    </a>
+                </h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Category:</strong> {{ comp.competition_category }}</p>
+                <p><strong>Description:</strong> {{ comp.competition_description }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <p class="mb-0 me-3">
+                        <strong>From:</strong>
+                        <span>{{ comp['start_date'].strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                    </p>
+                    <p class="mb-0">
+                        <strong>Time:</strong>
+                        <span id="countdown-{{ competition_id }}" class="countdown"></span>
+                    </p>
+                </div>
+                <p class="mb-0 me-3 my-1">
+                    <strong>End:</strong>
+                    <span class="end-time" data-time="{{ comp['end_date'].isoformat() }}">{{ comp['end_date'].strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        No ongoing competition found.
+    </div>
+    {% endif %}
+
+    <!-- Finalised Competitions Section -->
+    {% if past_competitions %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3 class="mb-0">Finalised Competition(s)</h3>
+        </div>
+        <div class="card-body">
+            {% for competition_id, comp in past_competitions.items() %}
+            <div class="mb-4">
+                <h2 class="h4">
+                    <a href="{{ url_for('competition_details', competition_id=competition_id) }}" class="text-decoration-none">
+                        {{ comp.competition_title }}
+                    </a>
+                </h2>
+                <p><strong>Category:</strong> {{ comp.competition_category }}</p>
+                <p><strong>Description:</strong> {{ comp.competition_description }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <p class="mb-0 me-3">
+                        <strong>From:</strong>
+                        <span>{{ comp['start_date'].strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                    </p>
+                    <!-- Removed Time Remaining for Finalised Competitions -->
+                </div>
+                <p class="mb-0 me-3 my-1">
+                    <strong>End:</strong>
+                    <span class="end-time" data-time="{{ comp['end_date'].isoformat() }}">{{ comp['end_date'].strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        No past/finalised competition found.
+    </div>
+    {% endif %}
+
+    <!-- Future Competitions Section -->
+    {% if session.get('role') == 'admin' and current_competitions %}
+    <div class="current-competitions-container mb-3">
+        <h3 class="mb-4"><strong>Future Competition(s)</strong></h3>
+        {% for competition_id, comp in future_competitions.items() %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <a href="{{ url_for('competition_details', competition_id=competition_id) }}" class="text-decoration-none">
+                        {{ comp.competition_title }}
+                    </a>
+                </h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Category:</strong> {{ comp.competition_category }}</p>
+                <p><strong>Description:</strong> {{ comp.competition_description }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <p class="mb-0 me-3">
+                        <strong>From:</strong>
+                        <span>{{ comp['start_date'].strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                    </p>
+                    <p class="mb-0">
+                        <strong>Time:</strong>
+                        <span id="countdown-{{ competition_id }}" class="countdown"></span>
+                    </p>
+                </div>
+                <p class="mb-0 me-3 my-1">
+                    <strong>End:</strong>
+                    <span class="end-time" data-time="{{ comp['end_date'].isoformat() }}">{{ comp['end_date'].strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Error Handling -->
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    function updateCountdown() {
+        const now = new Date();
+
+        document.querySelectorAll('.end-time').forEach(function(element) {
+            const endTime = new Date(element.getAttribute('data-time'));
+            const competitionId = element.closest('.card').querySelector('a').getAttribute('href').split('/').pop();
+            const countdownElement = document.querySelector('#countdown-' + competitionId);
+
+            // Check if countdownElement exists before proceeding
+            if (!countdownElement) {
+                return;  // Skip to the next iteration if not found
+            }
+
+            // Calculate the countdown
+            const diff = endTime - now;
+
+            if (diff <= 0) {
+                countdownElement.textContent = `Ended on ${endTime.toLocaleString()}`;
+                countdownElement.classList.add('text-danger'); // Highlight for ended competitions
+            } else {
+                const seconds = Math.floor((diff / 1000) % 60);
+                const minutes = Math.floor((diff / 1000 / 60) % 60);
+                const hours = Math.floor((diff / 1000 / 60 / 60) % 24);
+                const days = Math.floor(diff / 1000 / 60 / 60 / 24);
+
+                countdownElement.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s remaining`;
+                countdownElement.classList.remove('text-danger'); // Remove highlight if not ended
+            }
+        });
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+});
+</script>
+
+{% endblock %}

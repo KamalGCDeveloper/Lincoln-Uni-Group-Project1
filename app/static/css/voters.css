@@ -1,0 +1,137 @@
+/* Apply a light background color to the body */
+body {
+    background-color: rgb(240, 248, 255) !important; /* white background */
+    font-family: 'Helvetica Neue', Arial, sans-serif; /* Modern and readable font */
+    color: #000000; /* Black text color for readability */
+    margin: 0;
+    padding: 0;
+}
+.btn-group {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+.button {
+    background-color: #749895; /* dull red background */
+    border: 1px solid #555f4a; /* dull red border */
+    color: white; /* White text */
+    padding: 10px 24px; /* Some padding */
+    cursor: pointer; /* Pointer/hand icon */
+    font-size: 13px; /* Increase font size */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+    text-align: center; /* Center text */
+    text-decoration: none; /* Remove underline */
+}
+
+.button:hover {
+    background-color: #d7c1c1; /* Darker green on hover */
+}
+
+.form-label {
+    width: 150px; /* Adjust width as needed */
+}
+.button.active {
+    background-color: #859267 !important; /* Active button background color */
+    color: rgb(141, 191, 191)!important;
+}
+.btn-group {
+    margin-top: 20px; /* Adjust margin as needed */
+}
+/* Customize the navbar appearance */
+.navbar {
+    background-color: #526525 !important;
+    font-size: large !important;
+    color: #3f435a !important;
+}
+
+/* Style navigation links with hover effects */
+.nav-link {
+    color: rgb(81, 92, 88);
+}
+
+.nav-link:hover {
+    color: #f1c40f; /* Gold color on hover */
+}
+
+/* Style the footer for improved visibility */
+footer {
+    background-color: #ada063; /* Warm beige for the footer background */
+    text-align: center;
+    color: white; /* White text for contrast */
+    width: 100%; /* Full width to match the container */
+    height: 40px; /* Increased height for better spacing */
+    line-height: 30px; /* Center text vertically */
+    font-size: 1rem; /* Readable font size */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin: 0; /* Ensure no extra margin at the bottom */
+}
+
+/* Card styling improvements */
+.card {
+    border-radius: 0.5rem; /* Rounded corners for a modern look */
+    overflow: hidden; /* Prevent content overflow */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+    background-color: #ffffff; /* White background for the card */
+}
+
+/* Style the card header */
+.card-header {
+    background-color: #526525; /* green for the card header */
+    color: #ffffff; /* White text color for contrast */
+    font-size: 1.1rem; /* Slightly smaller font size */
+    padding: 0.5rem 1rem; /* Reduced padding for a smaller height */
+    font-weight: bold; /* Bold text for emphasis */
+    line-height: 1.2; /* Adjust line height for better vertical alignment */
+}
+
+/* Style the card body */
+.card-body {
+    padding: 1.5rem; /* Padding for spacing */
+}
+
+/* Highlight the countdown */
+#countdown {
+    font-size: 1.5rem; /* Larger font size for prominence */
+    font-weight: bold; /* Bold text for emphasis */
+    color: #ce3321; /* Bright red color for urgency */
+}
+
+/* Date font size adjustments */
+.date-font-size {
+    font-size: 0.9rem; /* Smaller font size for dates */
+}
+
+/* Ensure consistent margin and padding */
+.container {
+    padding: 1rem; /* Container padding */
+}
+
+h1, h3 {
+    margin-bottom: 1rem; /* Margin below headers */
+}
+
+/* Additional heading styles for readability */
+h1 {
+    font-size: 2.5rem; /* Larger size for main titles */
+    font-weight: bold;
+    color: #2c3e50; /* Dark blue-grey for better readability */
+}
+
+h3 {
+    font-size: 1.5rem; /* Slightly larger size for sub-titles */
+    color: #000000; /* Black for sub-titles */
+}
+
+/* Style competition titles for both current and finalised competitions */
+.card-header a {
+    color: #000000; /* blqck color for competition names */
+    text-decoration: none; /* Remove underline from links */
+}
+
+.card-header a:hover {
+    color: #f1c40f; /* Gold color on hover for competition names */
+    text-decoration: underline; /* Underline on hover for better visibility */
+}
+

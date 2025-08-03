@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    <div class="form-group">
+                        <label for="competition_id">Select an ongoing/unfinalised competition :</label>
+                        <select class="form-control" id="competition_id" name="competition_id" required>
+                            {% if competitions_for_select %}
+                            {% for comp_id, comp in competitions_for_select.items() %}
+                                <option value="{{ comp_id }}" {% if comp_id|string == competition_id %}selected{% endif %}>
+                                    {{ comp.competition_title }}
+                                </option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="">No current/unfinalised competitions available</option>
+                        {% endif %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3" name="action" value="confirm">Confirm</button>
+                </form>
+
+                {% if votes %}
+                <table class="table table-striped mt-4 text-small">
+                    <thead>
+                        <tr>
+                            <th class="text-small">Competitor Name</th>
+                            <th class="text-small">Voter Name</th>
+                            <th class="text-small">IP Address</th>
+                            <th class="text-small">Vote @</th>
+                            <th class="text-small">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vote in votes %}
+                        <tr>
+                            <td class="text-small">{{ vote.competitor_name }}</td>
+                            <td class="text-small" style="color: {{ 'red' if vote.user_status == 'inactive' else 'inherit' }}">
+                                {{ vote.username }}
+                                {% if vote.user_status == 'inactive' %}
+                                <br/><small>(invalid user)</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a
+                                    href="{{ url_for('votes_by_ip', ip_address=vote.ip_address, competition_id=competition_id) }}">
+                                    {{ vote.ip_address }}
+                                </a>
+                            </td>
+                            <td class="text-small">{{ vote.voted_at }}</td>
+                            <td style="color: {{ 'red' if vote.status == 'invalid' else 'inherit' }}">
+                                {{ vote.status }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

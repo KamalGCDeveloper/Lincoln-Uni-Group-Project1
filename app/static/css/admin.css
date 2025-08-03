@@ -1,0 +1,73 @@
+body {
+    background-color: rgb(169, 154, 154)!important;
+}
+
+.navbar {
+    background-color: #a08282 !important;
+    font-size: large !important;
+    color: #674748 !important;
+}
+
+.nav-link {
+    color: rgb(0, 0, 0)!important;
+}
+footer {
+    background-color: #e49a9a;
+    text-align: center;
+    color: white;
+    width: auto;
+    height: 40px;
+    font-size: 16px;
+    bottom: 0;
+  }
+
+  .btn-group {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+.button {
+    background-color: #a89772; /* dull red background */
+    border: 1px solid #555f4a; /* dull red border */
+    color: white; /* White text */
+    padding: 10px 24px; /* Some padding */
+    cursor: pointer; /* Pointer/hand icon */
+    font-size: 13px; /* Increase font size */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+    text-align: center; /* Center text */
+    text-decoration: none; /* Remove underline */
+}
+
+.button:hover {
+    background-color: #d7c1c1; /* Darker green on hover */
+}
+
+.button.active {
+    background-color: #896363; /* Darker background for active button */
+}
+.card-header-transparent {
+    background-color: rgba(255, 255, 255, 0.7); /* White background with 70% opacity */
+    color: #000; /* Text color to ensure readability */
+}
+
+iframe#content-frame {
+    width: 90%;
+    height: 800px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.form-label {
+    width: 150px; /* Adjust width as needed */
+}
+.button.active {
+    background-color: #706e6a !important; /* Active button background color */
+    color: rgb(141, 191, 191)!important;
+}
+.btn-group {
+    margin-top: 20px; /* Adjust margin as needed */
+}
+iframe#content-frame {
+    width: 100% !important;
+    border: none; /* Remove default border */
+    margin-top: 20px;
+}

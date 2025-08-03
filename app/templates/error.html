@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Error{% endblock %}
+{% block content %}
+
+<div class="container mt-10">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <div class="alert-danger error-alert" style="margin-top: 6rem; margin-bottom: 6rem;">
+                <h1 class="display-4">Error</h1>
+                <p class="lead">Oops! The page you're looking for doesn't exist.</p>
+                <hr>
+                <a href="{{ url_for('home') }}" class="btn btn-primary">Back to Homepage</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

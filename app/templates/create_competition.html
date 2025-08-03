@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .required-label::after {
+            content: ' *'; /* Adds the asterisk */
+            color: red;   /* Makes the asterisk red */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="alert-container">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            <div class="card">
+                <div class="card-header d-flex justify-content-center">Admin Create Competition</div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('create_competition') }}" enctype="multipart/form-data">
+                        <div class="row mb-3">  
+                            <div class="form-group col-sm-6">
+                                <label for="title" class="required-label">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3"> 
+                            <div class="form-group col-sm-6">
+                                <label for="categories" class="required-label">Categories</label>
+                                <input type="text" class="form-control" id="categories" name="categories" required>
+                            </div>      
+                        </div>
+                        <div class="row mb-3">           
+                            <div class="form-group col-sm-12">
+                                <label for="description" class="required-label">Competition Description</label>
+                                <input type="text" class="form-control" id="description" name="description" required>
+                            </div>    
+                        </div>
+                        <div class="row mb-3">            
+                            <div class="form-group col-sm-6">
+                                <label for="start_date" class="required-label">Start Date</label>
+                                <input type="date" class="form-control" id="start_date" name="start_date" min="{{ current_date }}" required>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label for="end_date" class="required-label">End Date</label>
+                                <input type="date" class="form-control" id="end_date" name="end_date" min="{{ current_date }}" required>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Create Competition</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        
+    </div>
+    <script>
+        // Get references to the start and end date input elements
+        const startDateInput = document.getElementById('start_date');
+        const endDateInput = document.getElementById('end_date'); 
+
+        // Add an event listener to the start date input to update the minimum value for the end date
+        startDateInput.addEventListener('change', function() {
+            // Set the minimum value of the end date to be the same as the start date
+            endDateInput.min = this.value;
+
+            // Optionally clear the end date value if it's before the new minimum
+            if (endDateInput.value < this.value) {
+                endDateInput.value = ''; 
+            }
+        });
+    </script>
+</body>
+</html>

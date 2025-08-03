@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <style>
+        .required-label::after {
+            content: ' *'; /* Adds the asterisk */
+            color: red;   /* Makes the asterisk red */
+        }
+    </style>
+    
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header d-flex justify-content-center">{{'Update Admin and Scrutineer' if user else 'Create Admin and Scrutineer' }}</div>
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="alert-container">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            <div class="card-body">
+                    <form method="POST" action="{{ url_for('create_users') }}" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="username" class="required-label">Username</label>
+                                    {% if user %}
+                                    <input type="hidden" name="username" value="{{ user.username }}">
+                                    {% endif %} 
+                                    <input type="text" class="form-control" id="username" name="username" {% if user %} value="{{ user.username }}" disabled{% else %}  required {% endif %}>
+                                </div>
+                                {% if user %}
+                                <div class="form-group">
+                                    <label for="pass_msg">if you do not change the password, the old password will applicable.</label>  </div>
+                                {% endif %}
+                                <div class="form-group">
+                                    <label for="password" class="required-label">Password</label>
+                                    <input type="password" class="form-control" id="password" placeholder="Atleast 8 character, 1 capital letter, 1 small letter and 1 number." name="password" {% if user %} value="{{ user.password }}" {% else %} pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required {% endif %}>
+                                </div>
+                                <div class="form-group">
+                                    <label for="first_name">First Name(Optional)</label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name" value="{{user.first_name if user else '' }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="location">Location(Optional)</label>
+                                    <input type="text" class="form-control" id="location" name="location" value="{{user.location if user else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email" class="required-label">Email</label>
+                                    <input type="email" class="form-control" id="email" placeholder="abc@sitename.com" name="email" required value="{{user.email if user else '' }}">
+                                </div>
+                                {% if user %}
+                                <div class="form-group">
+                                    <label for="pass_msg1" style="visibility: hidden;">if you do not change the password, the old password will applicable.</label>  </div>
+                                {% endif %}
+                                <div class="form-group">
+                                    <label for="confirm_password" class="required-label">Confirm Password</label>
+                                    <input type="password" class="form-control" id="confirm_password" placeholder="Atleast 8 character, 1 capital letter, 1 small letter and 1 number." name="confirm_password" {% if user %} value="{{ user.password }}" {% else %} pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required {% endif %}>
+                                </div>
+                                <div class="form-group">
+                                    <label for="last_name">Last Name(Optional)</label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name" value="{{user.last_name if user else '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label for="role" class="required-label">User Role</label>
+                                        <div class="col-sm-9">
+                                        <select name="role" class="form-control">
+                                            <option value="">Select a role</option>
+                                            <option value="admin" {% if user and user.role == 'admin' %}selected{% endif %}>Admin</option>
+                                            <option value="scrutineer" {% if user and user.role == 'scrutineer' %}selected{% endif %}>Scrutineer</option>
+                                        </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if user %}
+                            <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <label for="role" class="required-label">User Status</label>
+                                    <div class="col-sm-9">     
+                                    <select name="status" class="form-control">
+                                        <option value="active" {% if user and user.status == 'active' %}selected{% endif %}>Active</option>
+                                        <option value="inactive" {% if user and user.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                                    </select>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="col-md-12 d-flex justify-content-center">
+                                <button type="submit" name="action" value="update" class="btn btn-primary mr-2">Update User</button>
+                            </div>
+                            {% else %}
+                            <div class="col-md-12 d-flex justify-content-center">
+                                <button type="submit" name="action" value="register" class="btn btn-primary mr-2">Create User</button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                        
+                    </form>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript to handle the date formate -->
+    <script>
+         // Ensure that the input field is set to the current date in the correct format (YYYY-MM-DD)
+    document.addEventListener('DOMContentLoaded', function() {
+        var dateInput = document.getElementById('birth_date');
+        var today = new Date();
+        var day = String(today.getDate()).padStart(2, '0');
+        var month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        var year = today.getFullYear();
+        var currentDate = year + '-' + month + '-' + day;
+
+        dateInput.setAttribute('max', currentDate);
+    });
+    </script>
+</body>
+</html>

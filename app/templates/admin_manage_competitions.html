@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .competition {
+            text-decoration: none;
+            color: #333;
+        }
+        .competition:hover {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="card-header d-flex justify-content-center">Competitions Management</div>
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="alert-container">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        <div class="row">
+            <div class="col-md-12">
+                <h5>Competitions</h5>
+                <ul class="list-group">
+                    {% for competition in competitions %}
+                        <li class="list-group-item">
+                            <a href="javascript:void(0);" class="competition" onclick="showDetails({{ competition.competition_id }})">
+                                {{ competition.title|e }}
+                            </a>
+                            <div id="competition-data-{{ competition.competition_id }}" 
+                                data-title="{{ competition.title|e }}" 
+                                data-category="{{ competition.category|e }}"
+                                data-description="{{ competition.competition_description|e }}"
+                                data-start-date="{{ competition.start_date|e }}"
+                                data-end-date="{{ competition.end_date|e }}"
+                                data-public="{{ competition.is_public }}"
+                                data-result-finalised="{{ competition.result_finalised }}"
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
+        <div id="competition-details" class="mt-4">
+            <div class="card" id="details-card" style="display:none;">
+                <div class="card-header">
+                    <h5 id="comp-title"></h5>
+                    <p><strong>Category:</strong> <span id="comp-category"></span></p>
+                    <p><strong>Description:</strong> <span id="comp-description"></span></p>
+                    <p><strong>Start Date:</strong> <span id="comp-start-date"></span></p>
+                    <p><strong>End Date:</strong> <span id="comp-end-date"></span></p>
+                    <p><strong>Public:</strong> <span id="comp-public"></span></p>
+                    <p><strong>Result Finalised:</strong> <span id="comp-result-finalised"></span></p>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <form id="delete-competition-form" action="{{ url_for('delete_competition') }}" method="post" onsubmit="return confirm('Are you sure you want to delete this competition?');">
+                            <input type="hidden" name="competition_id" id="delete-comp-id">
+                            <button type="submit" class="btn btn-danger mr-2">Delete Competition</button>
+                        </form>
+
+                        <button type="button" class="btn btn-primary mr-2" onclick="toggleEditForm()">Edit Competition</button>
+
+                        <form id="add-competitor-form" action="{{ url_for('create_competitors') }}" method="post">
+                            <input type="hidden" name="competition_id" id="add-comp-id">
+                            <button type="submit"  class="btn btn-success mr-2" name="action" value="pre_selected_competition">Add Competitor</button>
+                        </form>
+                        <form id="add-competition-public" action="{{ url_for('edit_competition') }}" method="post">
+                            <input type="hidden" name="competition_id" id="add-pub-comp-id">
+                            <button type="submit"  class="btn btn-success mr-2" name="action" value="public_competition">Publish Competition</button>
+                        </form>
+                    </div>
+                    
+                    <form id="edit-competition-form" action="{{ url_for('edit_competition') }}" method="post" enctype="multipart/form-data" class="mt-2" style="display:none;">
+                        <input type="hidden" name="competition_id" id="edit-comp-id">
+                        <div class="form-group">
+                            <label for="edit-comp-title">Title</label>
+                            <input type="text" name="title" id="edit-comp-title" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-comp-category">Category</label>
+                            <input type="text" name="category" id="edit-comp-category" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-comp-description">Description</label>
+                            <textarea name="competition_description" id="edit-comp-description" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-comp-start-date">Start Date</label>
+                            <input type="date" name="start_date" id="edit-comp-start-date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-comp-end-date">End Date</label>
+                            <input type="date" name="end_date" id="edit-comp-end-date" class="form-control" required>
+                        </div>
+                                               
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                    
+                </div>
+                <div class="card-body">
+                    <h6>Current Competitors</h6>
+                    <ul id="current-competitors-list" class="list-group mb-3">
+                        <!-- Competitors will be added dynamically -->
+                    </ul>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const competitors = [
+        {% for competitor in all_competitors %}
+            {
+                competitor_id: {{ competitor.competitor_id }},
+                competition_id: {{ competitor.competition_id }},
+                competitor_name: "{{ competitor.competitor_name|e }}",
+                competitor_description: "{{ competitor.competitor_description|e }}",
+                competitor_image: "{{ competitor.competitor_image|e }}"
+            }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    const allCompetitors = [
+        {% for competitor in competitors %}
+            {
+                competitor_id: {{ competitor.competitor_id }},
+                competitor_name: "{{ competitor.competitor_name|e }}"
+            }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    function showDetails(competitionId) {
+        const competitionDataElement = document.getElementById(`competition-data-${competitionId}`);
+        if (!competitionDataElement) return;
+    
+        const competition = {
+            title: competitionDataElement.getAttribute('data-title'),
+            category: competitionDataElement.getAttribute('data-category'),
+            description: competitionDataElement.getAttribute('data-description'),
+            startDate: competitionDataElement.getAttribute('data-start-date'),
+            endDate: competitionDataElement.getAttribute('data-end-date'),
+            isPublic: competitionDataElement.getAttribute('data-public'),
+            resultFinalised: competitionDataElement.getAttribute('data-result-finalised'),
+        };
+    
+        // Update the competition details view
+        document.getElementById('details-card').style.display = 'block';
+        document.getElementById('comp-title').textContent = competition.title;
+        document.getElementById('comp-category').textContent = competition.category;
+        document.getElementById('comp-description').textContent = competition.description;
+        document.getElementById('comp-start-date').textContent = competition.startDate;
+        document.getElementById('comp-end-date').textContent = competition.endDate;
+        document.getElementById('delete-comp-id').value = competitionId;
+        document.getElementById('add-comp-id').value = competitionId;
+        document.getElementById('add-pub-comp-id').value = competitionId;
+        
+        // Populate the edit form
+        const editForm = document.getElementById('edit-competition-form');
+        document.getElementById('edit-comp-id').value = competitionId;
+        document.getElementById('edit-comp-title').value = competition.title;
+        document.getElementById('edit-comp-category').value = competition.category;
+        document.getElementById('edit-comp-description').value = competition.description;
+    
+        // Extract and set date values in YYYY-MM-DD format
+        const startDate = competition.startDate.split(' ')[0]; // Extract date part
+        const endDate = competition.endDate.split(' ')[0]; // Extract date part
+        const startDateInput = document.getElementById('edit-comp-start-date');
+        startDateInput.value = startDate;
+        startDateInput.min = startDate;
+        const endDateInput = document.getElementById('edit-comp-end-date');
+        endDateInput.value = endDate; 
+        endDateInput.min = endDate;       
+
+        // Add an event listener to the start date input to update the minimum value for the end date
+        startDateInput.addEventListener('change', function() {
+            // Set the minimum value of the end date to be the same as the start date
+            endDateInput.min = this.value;
+
+            // Optionally clear the end date value if it's before the new minimum
+            if (endDateInput.value < this.value) {
+                endDateInput.value = '';
+            }
+        });
+        // Clear and display current competitors
+        const currentCompetitorsList = document.getElementById('current-competitors-list');
+        currentCompetitorsList.innerHTML = '';
+    
+        const filteredCompetitors = competitors.filter(c => c.competition_id == competitionId);
+        filteredCompetitors.forEach(comp => {
+            // Create the list item
+        const listItem = document.createElement('li');
+        listItem.className = 'list-group-item d-flex align-items-center';
+
+        // Create the image element
+        const img = document.createElement('img');
+        img.src = 'static/competitor_images/'+comp.competitor_image; 
+        img.className = 'img-thumbnail mr-3';
+        img.style.width = '50px'; 
+        img.style.height = '50px';
+        img.style.objectFit = 'cover';
+ 
+        // Create a div to wrap text content
+        const textWrapper = document.createElement('div');
+
+        // Create the competitor name and description elements
+        const nameText = document.createElement('strong');
+        nameText.textContent = comp.competitor_name;
+        
+        const descriptionText = document.createElement('p');
+        descriptionText.textContent = comp.competitor_description;
+        descriptionText.className = 'mb-0'; // Ensure there is no bottom margin for the description
+
+        // Append text elements to text wrapper
+        textWrapper.appendChild(nameText);
+        textWrapper.appendChild(descriptionText);
+
+        // Create a content wrapper for image and text
+        const contentWrapper = document.createElement('div');
+        contentWrapper.className = 'd-flex align-items-center';
+        contentWrapper.appendChild(img);
+        contentWrapper.appendChild(textWrapper);
+
+        // Append content wrapper to list item
+        listItem.appendChild(contentWrapper);
+
+        // Create remove button and align it to the right
+        const removeButton = createRemoveButton(comp.competitor_id, competitionId);
+        removeButton.className = 'btn btn-danger btn-sm ml-auto'; // Use 'ml-auto' to push button to the right
+        listItem.appendChild(removeButton);
+
+        // Append the list item to the competitors list
+        currentCompetitorsList.appendChild(listItem);
+        });
+    
+        
+    }
+    
+    function toggleEditForm() {
+        const form = document.getElementById('edit-competition-form');
+        form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
+    }
+    
+        
+    function createRemoveButton(competitorId, competitionId) {
+        const button = document.createElement('button');
+        button.className = 'btn btn-danger btn-sm ml-2';
+        button.textContent = 'Remove';
+        button.onclick = () => removeCompetitor(competitorId, competitionId);
+        return button;
+    }
+    
+    function removeCompetitor(competitorId, competitionId) {
+        if (!confirm('Are you sure you want to delete this competitor?')) {
+            return; // Exit the function if the user cancels the confirmation
+        }
+    
+        console.log('Removing competitor:', competitorId, 'from competition:', competitionId);
+        
+        const formData = new FormData();
+        formData.append('competition_id', competitionId);
+        formData.append('competitor_id', competitorId);
+    
+        fetch('{{ url_for('remove_competitor_from_competition') }}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            console.log('Server response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Server response data:', data);
+            if (data.status === 'success') {
+                const index = competitors.findIndex(comp => comp.competitor_id == competitorId && comp.competition_id == competitionId);
+                if (index !== -1) {
+                    competitors.splice(index, 1);
+                }
+                showDetails(competitionId); // Refresh the details view
+            } else {
+                alert('An error occurred while removing the competitor.');
+            }
+        })
+        .catch(error => {
+            console.error('Error removing competitor:', error);
+            alert('An error occurred while removing the competitor. Please try again.');
+        });
+    }
+    
+    
+    </script>
+</body>
+</html>

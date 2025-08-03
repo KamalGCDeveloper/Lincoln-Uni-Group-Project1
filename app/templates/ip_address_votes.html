@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Votes by IP</title>
+</head>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<body>
+<div class="container mt-5">
+    <div class="card">
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="alert-container">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="card-body">
+            <h3>Votes from IP: {{ ip_address }}</h3>
+            <h4>Competition: {{ competition_name }}</h4>
+            {% if is_invalid %}
+            <div class="alert alert-danger" role="alert">
+                This IP address has been marked as invalid.
+            </div>
+            {% if user_status != 'inactive' %}
+            <form method="post" action="{{ url_for('deactivate_users_by_ip') }}">
+                <input type="hidden" name="ip_address" value="{{ ip_address }}">
+                <input type="hidden" name="competition_id" value="{{ competition_id }}">
+                <button type="submit" class="btn btn-danger mt-3">Deactivate Voters</button>
+                <p class="text-muted">Click to deactivate all voters associated with this invalid IP address</p>
+            </form>
+            {% endif %}
+            {% else %}
+            <form method="post" action="{{ url_for('mark_votes_invalid') }}">
+                <input type="hidden" name="ip_address" value="{{ ip_address }}">
+                <input type="hidden" name="competition_id" value="{{ competition_id }}">
+                <button type="submit" class="btn btn-danger mt-3">Invalidate IP</button>
+            </form>
+            {% endif %}
+            <table class="table table-striped mt-4">
+                <thead>
+                    <tr>
+                        <th>Competitor Name</th>
+                        <th>Username</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Vote @</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vote in votes %}
+                    <tr>
+                        <td>{{ vote.competitor_name }}</td>
+                        <td class="text-small" style="color: {{ 'red' if user_status == 'inactive' else 'inherit' }}">
+                            {{ vote.username }}
+                            {% if user_status == 'inactive' %}
+                            <br/><small>(invalid user)</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ vote.first_name }}</td>
+                        <td>{{ vote.last_name }}</td>
+                        <td>{{ vote.voted_at }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="{{ url_for('ip_address_check') }}" class="btn btn-secondary mt-3">Back</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

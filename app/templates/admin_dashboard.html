@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+
+
+<div class="container">
+    <div class="card-header card-header-transparent d-flex justify-content-center">Admin Dashboard</div>
+    <div class="btn-group">
+        <a href="{{ url_for('create_users') }}" target="content-frame" class="button {% if request.endpoint == 'create_users' %}active{% endif %}">Create Users</a>
+        <a href="{{ url_for('create_competition') }}" target="content-frame" class="button {% if request.endpoint == 'create_competition' %}active{% endif %}">Create Competition</a>
+        <a href="{{ url_for('list_competitions') }}" target="content-frame" class="button {% if request.endpoint == 'list_competitions' %}active{% endif %}">Manage Competition</a>        
+        <a href="{{ url_for('create_competitors') }}" target="content-frame" class="button {% if request.endpoint == 'create_competitors' %}active{% endif %}">Create Competitors</a>
+        <a href="{{ url_for('list_competitors') }}" target="content-frame" class="button {% if request.endpoint == 'list_competitors' %}active{% endif %}">Manage Competitors</a>
+        <a href="{{ url_for('voters_profile') }}" target="content-frame" class="button {% if request.endpoint == 'voters_profile' %}active{% endif %}">View Voters Profile</a>
+        <a href="{{ url_for('view_admin_scrutineer') }}" target="content-frame" class="button {% if request.endpoint == 'view_admin_scrutineer' %}active{% endif %}">Manage Admin Scrutineer</a>
+        <a href="{{ url_for('daily_votes_check') }}" target="content-frame" class="button {% if request.endpoint == 'daily_votes_check' %}active{% endif %}">Daily Votes Check</a>                
+    </div>   
+    
+    <iframe id="content-frame" name="content-frame" src="{{ url_for('create_users') }}"></iframe>
+</div>
+
+<script>
+    // Function to handle the active button
+    function setActiveButton() {
+        const iframeSrc = document.getElementById('content-frame').src;
+        const buttons = document.querySelectorAll('.btn-group .button');
+        buttons.forEach(button => {
+            button.classList.remove('active');
+            if (button.href === iframeSrc) {
+                button.classList.add('active');
+            }
+        });
+    }
+
+    // Event listeners for button clicks
+    document.querySelectorAll('.btn-group .button').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            document.getElementById('content-frame').src = this.href;
+
+            document.querySelectorAll('.btn-group .button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+    });
+
+    // Set the correct button active on page load
+    document.getElementById('content-frame').addEventListener('load', setActiveButton);
+    // Iframe script
+    window.addEventListener('message', function(event) {
+        if (event.data.type === 'flash') {
+            // Handle the flash message in the iframe
+            alert(event.data.message); // Example handling
+        }
+    });
+
+   
+</script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock %}

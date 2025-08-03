@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        .required-label::after {
+            content: ' *'; /* Adds the asterisk */
+            color: red;   /* Makes the asterisk red */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-center">
+                        {{ 'Edit Competitor' if competitor else 'Admin Create Competitors' }}
+                    </div>
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    <div class="alert-container">
+                        {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('create_competitors') }}" enctype="multipart/form-data">
+                            <div class="form-group row mb-3">
+                                <label for="competition_id" class="required-label">Competition</label>
+                                <div class="col-sm">
+                                    <select class="form-control" id="competition_id" name="competition_id" {% if competition_id %}disabled{% endif %} required>
+                                        {% for comp in competitions %}
+                                        <option value="{{ comp.competition_id }}"
+                                        {% if competition_id and competition_id|string == comp.competition_id|string %}selected{% endif %}
+                                        {% if competitor and competitor.competition_id == comp.competition_id %}selected{% endif %}>
+                                        {{ comp.title }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-3">
+                                <label for="name" class="required-label">Competitors name</label>
+                                <div class="col-sm">
+                                    <input type="text" class="form-control" id="name" name="name" 
+                                           value="{{ competitor.competitor_name if competitor else '' }}" required>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-3">
+                                <label for="description" class="required-label">Competitors Description</label>
+                                <div class="col-sm">
+                                    <input type="text" class="form-control" id="description" name="description" 
+                                           value="{{ competitor.competitor_description if competitor else '' }}" required>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-3">
+                                <label for="competitors_image" class="required-label">Competitors Image</label>
+                                <div class="col-sm">
+                                    <input type="file" class="form-control-file" id="competitors_image" name="competitors_image" accept="image/*" 
+                                           {% if not competitor %}required{% endif %}>
+                                    {% if competitor and competitor.competitor_image %}
+                                    <div class="mt-2">
+                                        <img src="{{ url_for('static', filename='competitor_images/' + competitor.competitor_image) }}" 
+                                             class="img-thumbnail" alt="Competitor Image">
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                {%if competition_id%}
+                                <button type="submit" class="btn btn-primary" name='competition_id' value={{competition_id}} >
+                                    Add Competitor
+                                </button>
+                                {%else%}
+                                <button type="submit" class="btn btn-primary">
+                                    Create Competitor
+                                </button>
+                                {%endif%}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

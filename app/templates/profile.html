@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}User Profile{% endblock %}
+{% block content %}
+
+<style>
+    .form-label {
+        width: 150px;
+        /* Adjust width as needed */
+    }
+
+    .button.active {
+        background-color: #ffb700;
+        /* Active button background color */
+        color: azure;
+    }
+
+    .btn-group {
+        margin-top: 20px;
+        /* Adjust margin as needed */
+    }
+
+    iframe#content-frame {
+    width: 90%;
+    height: 80vh;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+</style>
+
+<div class="container">
+    <div class="card-header card-header-transparent d-flex justify-content-center">User Profile</div>
+    <div class="btn-group mt-3">
+        <a href="{{ url_for('user_info') }}" target="content-frame"
+            class="button {% if request.endpoint == 'profile' %}active{% endif %}">User Information</a>
+        <a href="{{ url_for('update_password') }}" target="content-frame"
+            class="button {% if request.endpoint == 'update_password' %}active{% endif %}">Password Management</a>
+    </div>
+
+    <iframe id="content-frame" name="content-frame" src="{{ url_for('user_info') }}"></iframe>
+
+</div>
+</div>
+
+<script>
+    // Function to handle the active button
+    function setActiveButton() {
+        const iframeSrc = document.getElementById('content-frame').src;
+        const buttons = document.querySelectorAll('.btn-group .button');
+        buttons.forEach(button => {
+            button.classList.remove('active');
+            if (button.href === iframeSrc) {
+                button.classList.add('active');
+            }
+        });
+    }
+
+    // Event listeners for button clicks
+    document.querySelectorAll('.btn-group .button').forEach(button => {
+        button.addEventListener('click', function (event) {
+            event.preventDefault();
+            document.getElementById('content-frame').src = this.href;
+
+            document.querySelectorAll('.btn-group .button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+    });
+
+    // Set the correct button active on page load
+    document.getElementById('content-frame').addEventListener('load', setActiveButton);
+
+</script>
+
+{% endblock %}

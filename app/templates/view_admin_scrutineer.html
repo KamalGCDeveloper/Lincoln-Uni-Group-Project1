@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .user-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .img-thumbnail {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .table td, .table th {
+            vertical-align: middle;
+        }.clickable-row {
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const rows = document.querySelectorAll('.clickable-row');
+            rows.forEach(row => {
+                row.addEventListener('click', function () {                    
+                    // navigate to the data-href URL
+                    var href = row.getAttribute('data-href');
+                if (href) {
+                    window.location.href = href;
+                }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    
+    <div class="card-header d-flex justify-content-center">Admin Create View/edit Admin and Scrutineer</div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('update_admin_users') }}">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Role</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr class="clickable-row" data-href="{{ url_for('create_users', user_id=user.user_id) }}">
+                        <td>
+                            {% if user.user_image %}
+                            <img src="{{ url_for('static', filename='profile_images/' + user.user_image) }}" class="img-thumbnail">
+                            {% else %}
+                            <img src="{{ url_for('static', filename='profile_images/default.png') }}" class="img-thumbnail">
+                            {% endif %}
+                        </td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.first_name }}</td>
+                        <td>{{ user.last_name }}</td>
+                        <td>{{ user.role }}</td>
+                        <td>{{ user.user_description }}</td>
+                        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>            
+        </form>
+    </div>
+                
+</body>
+</html>

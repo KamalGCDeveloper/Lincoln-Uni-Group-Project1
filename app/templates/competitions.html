@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Competitions{% endblock %}
+{% block content %}
+
+<div class="col-md-12">
+    <!-- Dropdown for selecting competition type -->
+    <div class="mb-3">
+        <label for="competitionFilter" class="form-label">Filter Competitions</label>
+        <select id="competitionFilter" class="form-select" aria-label="Competition filter">
+            <option value="all" selected>All Competitions</option>
+            <option value="current">Current Competitions</option>
+            <option value="past">Past Competitions</option>
+            <option value="future">Upcoming Competitions</option>
+        </select>
+    </div>
+
+    <!-- Competitions Display Area -->
+    <div id="competitionsContainer" class="list-group">
+        <!-- Current Competitions -->
+        <div id="currentCompetitions" class="container" style="background-color: white; margin-top: 0;">
+            <h1 class="text-left">Current Competition(s)</h1>
+            {% if current_competitions %}
+                {% for competition_id, comp in current_competitions.items() %}
+                <div>
+                    <h1 class="text-left"><a href="{{ url_for('competition_details', competition_id=competition_id)}}">{{ comp.competition_title }}</a></h1>
+                    <div class="text-left">
+                        <p><strong>Category:</strong> {{ comp.competition_category }}</p>
+                        <p><strong>Description:</strong> {{ comp.competition_description }}</p>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <p class="mb-0 me-3"><strong>From:</strong> {{ comp['start_date'].strftime('%Y-%m-%d') }}</p>
+                        <p class="mb-0 ml-3"><strong>To:</strong> {{ comp['end_date'].strftime('%Y-%m-%d') }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No current competitions found.</p>
+            {% endif %}
+        </div>
+
+        <!-- Past Competitions -->
+        <div id="pastCompetitions" class="container mt-3" style="background-color: lightgray;">
+            <h1 class="text-left">Finalised Competition(s)</h1>
+            {% if past_competitions %}
+                {% for competition_id, comp in past_competitions.items() %}
+                <div>
+                    <h1 class="text-left"><a href="{{ url_for('competition_details', competition_id=competition_id)}}">{{ comp.competition_title }}</a></h1>
+                    <div class="text-left">
+                        <p><strong>Category:</strong> {{ comp.competition_category }}</p>
+                        <p><strong>Description:</strong> {{ comp.competition_description }}</p>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <p class="mb-0 me-3"><strong>From:</strong> {{ comp['start_date'].strftime('%Y-%m-%d') }}</p>
+                        <p class="mb-0 ml-3"><strong>To:</strong> {{ comp['end_date'].strftime('%Y-%m-%d') }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No past competitions found.</p>
+            {% endif %}
+        </div>
+
+        <!-- Future Competitions -->
+        <div id="futureCompetitions" class="container mt-3" style="background-color: rgb(199, 210, 172);">
+            <h1 class="text-left">Upcoming Competition(s)</h1>
+            {% if future_competitions %}
+                {% for competition_id, comp in future_competitions.items() %}
+                <div>
+                    <h1 class="text-left"><a href="{{ url_for('competition_details', competition_id=competition_id)}}">{{ comp.competition_title }}</a></h1>
+                    <div class="text-left">
+                        <p><strong>Category:</strong> {{ comp.competition_category }}</p>
+                        <p><strong>Description:</strong> {{ comp.competition_description }}</p>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <p class="mb-0 me-3"><strong>From:</strong> {{ comp['start_date'].strftime('%Y-%m-%d') }}</p>
+                        <p class="mb-0 ml-3"><strong>To:</strong> {{ comp['end_date'].strftime('%Y-%m-%d') }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No upcoming competitions found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if error %}
+    <div style="background-color: white;">
+        <p>{{ error }}</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    document.getElementById('competitionFilter').addEventListener('change', function() {
+        var value = this.value;
+        // Hide all competitions initially
+        document.getElementById('currentCompetitions').style.display = 'none';
+        document.getElementById('pastCompetitions').style.display = 'none';
+        document.getElementById('futureCompetitions').style.display = 'none';
+
+        // Show competitions based on the selected filter
+        if (value === 'all') {
+            document.getElementById('currentCompetitions').style.display = 'block';
+            document.getElementById('pastCompetitions').style.display = 'block';
+            document.getElementById('futureCompetitions').style.display = 'block';
+        } else if (value === 'current') {
+            document.getElementById('currentCompetitions').style.display = 'block';
+        } else if (value === 'past') {
+            document.getElementById('pastCompetitions').style.display = 'block';
+        } else if (value === 'future') {
+            document.getElementById('futureCompetitions').style.display = 'block';
+        }
+    });
+    // Initialize view to display all competitions
+    document.getElementById('competitionFilter').dispatchEvent(new Event('change'));
+</script>
+
+{% endblock %}
